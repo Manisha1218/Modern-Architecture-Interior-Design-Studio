@@ -1,0 +1,764 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>FORMA Studio | Architecture & Interior Design</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display&family=Outfit:wght@300;400;500;600&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --bg: #E8E4DC;
+      --bg-alt: #F5F2EB;
+      --fg: #1A1A18;
+      --fg-muted: #6B6A65;
+      --accent: #9C7C5C;
+      --accent-hover: #8B6B4B;
+      --card: #FFFFFF;
+      --border: #D4D0C8;
+      --dark-bg: #1A1A18;
+      --dark-fg: #E8E4DC;
+    }
+
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    html {
+      scroll-behavior: smooth;
+    }
+
+    body {
+      font-family: 'Outfit', sans-serif;
+      background-color: var(--bg);
+      color: var(--fg);
+      overflow-x: hidden;
+      line-height: 1.6;
+    }
+
+    .font-serif {
+      font-family: 'DM Serif Display', serif;
+    }
+
+    /* Smooth Scroll Snapping Sections (Optional - currently disabled for standard scroll) */
+    
+    /* Custom Cursor */
+    .cursor {
+      width: 20px;
+      height: 20px;
+      border: 1px solid var(--fg);
+      border-radius: 50%;
+      position: fixed;
+      pointer-events: none;
+      z-index: 9999;
+      transition: transform 0.15s ease-out, opacity 0.15s ease-out;
+      transform: translate(-50%, -50%);
+    }
+
+    .cursor-dot {
+      width: 4px;
+      height: 4px;
+      background: var(--accent);
+      border-radius: 50%;
+      position: fixed;
+      pointer-events: none;
+      z-index: 9999;
+      transform: translate(-50%, -50%);
+    }
+
+    .cursor.hover {
+      transform: translate(-50%, -50%) scale(2.5);
+      background: rgba(156, 124, 92, 0.1);
+      border-color: var(--accent);
+    }
+
+    /* Navigation */
+    .nav-link {
+      position: relative;
+      padding-bottom: 4px;
+      font-size: 0.875rem;
+      letter-spacing: 0.05em;
+      text-transform: uppercase;
+    }
+
+    .nav-link::after {
+      content: '';
+      position: absolute;
+      left: 0;
+      bottom: 0;
+      width: 0;
+      height: 1px;
+      background: currentColor;
+      transition: width 0.4s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+    }
+
+    .nav-link:hover::after {
+      width: 100%;
+    }
+
+    /* Hero Image Parallax Container */
+    .hero-img-container {
+      overflow: hidden;
+    }
+
+    .hero-img {
+      transition: transform 0.3s ease-out;
+    }
+
+    /* Reveal Animations */
+    .reveal {
+      opacity: 0;
+      transform: translateY(60px);
+      transition: all 1s cubic-bezier(0.16, 1, 0.3, 1);
+    }
+
+    .reveal.visible {
+      opacity: 1;
+      transform: translateY(0);
+    }
+
+    .reveal-left {
+      opacity: 0;
+      transform: translateX(-60px);
+      transition: all 1s cubic-bezier(0.16, 1, 0.3, 1);
+    }
+
+    .reveal-left.visible {
+      opacity: 1;
+      transform: translateX(0);
+    }
+
+    .reveal-right {
+      opacity: 0;
+      transform: translateX(60px);
+      transition: all 1s cubic-bezier(0.16, 1, 0.3, 1);
+    }
+
+    .reveal-right.visible {
+      opacity: 1;
+      transform: translateX(0);
+    }
+
+    /* Marquee */
+    .marquee-container {
+      overflow: hidden;
+      white-space: nowrap;
+    }
+
+    .marquee-content {
+      display: inline-block;
+      animation: marquee 20s linear infinite;
+    }
+
+    @keyframes marquee {
+      0% { transform: translateX(0); }
+      100% { transform: translateX(-50%); }
+    }
+
+    /* Project Cards */
+    .project-card {
+      position: relative;
+      overflow: hidden;
+    }
+
+    .project-card img {
+      transition: transform 0.8s cubic-bezier(0.16, 1, 0.3, 1);
+    }
+
+    .project-card:hover img {
+      transform: scale(1.05);
+    }
+
+    .project-overlay {
+      position: absolute;
+      inset: 0;
+      background: linear-gradient(to top, rgba(26, 26, 24, 0.8) 0%, transparent 60%);
+      opacity: 0;
+      transition: opacity 0.5s ease;
+    }
+
+    .project-card:hover .project-overlay {
+      opacity: 1;
+    }
+
+    .project-info {
+      position: absolute;
+      bottom: 0;
+      left: 0;
+      right: 0;
+      padding: 2rem;
+      transform: translateY(20px);
+      opacity: 0;
+      transition: all 0.5s ease 0.1s;
+    }
+
+    .project-card:hover .project-info {
+      transform: translateY(0);
+      opacity: 1;
+    }
+
+    /* Buttons */
+    .btn-primary {
+      background: var(--fg);
+      color: var(--bg);
+      padding: 1rem 2rem;
+      font-size: 0.875rem;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      position: relative;
+      overflow: hidden;
+      transition: color 0.3s ease;
+      z-index: 1;
+    }
+
+    .btn-primary::before {
+      content: '';
+      position: absolute;
+      inset: 0;
+      background: var(--accent);
+      transform: scaleX(0);
+      transform-origin: right;
+      transition: transform 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+      z-index: -1;
+    }
+
+    .btn-primary:hover::before {
+      transform: scaleX(1);
+      transform-origin: left;
+    }
+
+    .btn-outline {
+      border: 1px solid var(--fg);
+      color: var(--fg);
+      padding: 1rem 2rem;
+      font-size: 0.875rem;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      background: transparent;
+      transition: all 0.3s ease;
+    }
+
+    .btn-outline:hover {
+      background: var(--fg);
+      color: var(--bg);
+    }
+
+    /* Menu Overlay */
+    .menu-overlay {
+      position: fixed;
+      inset: 0;
+      background: var(--dark-bg);
+      z-index: 100;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      padding: 2rem;
+      transform: translateY(-100%);
+      transition: transform 0.8s cubic-bezier(0.76, 0, 0.24, 1);
+    }
+
+    .menu-overlay.open {
+      transform: translateY(0);
+    }
+
+    .menu-link {
+      font-size: clamp(2rem, 8vw, 5rem);
+      color: var(--dark-fg);
+      text-decoration: none;
+      display: block;
+      padding: 0.5rem 0;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .menu-link span {
+      display: inline-block;
+      transition: transform 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+    }
+
+    .menu-link:hover span {
+      transform: translateX(2rem);
+    }
+
+    .menu-link::before {
+      content: attr(data-text);
+      position: absolute;
+      left: 0;
+      top: 0.5rem;
+      color: var(--accent);
+      clip-path: polygon(0 0, 0 0, 0 100%, 0 100%);
+      transition: clip-path 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+    }
+
+    .menu-link:hover::before {
+      clip-path: polygon(0 0, 100% 0, 100% 100%, 0 100%);
+    }
+
+    /* Focus Visible */
+    button:focus-visible,
+    a:focus-visible {
+      outline: 2px solid var(--accent);
+      outline-offset: 4px;
+    }
+
+    /* Responsive adjustments for cursor */
+    @media (pointer: coarse) {
+      .cursor, .cursor-dot {
+        display: none;
+      }
+    }
+
+    /* Reduced Motion */
+    @media (prefers-reduced-motion: reduce) {
+      *, *::before, *::after {
+        animation-duration: 0.01ms !important;
+        animation-iteration-count: 1 !important;
+        transition-duration: 0.01ms !important;
+      }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Custom Cursor -->
+  <div class="cursor hidden md:block"></div>
+  <div class="cursor-dot hidden md:block"></div>
+
+  <!-- Navigation -->
+  <nav class="fixed top-0 left-0 right-0 z-50 mix-blend-difference">
+    <div class="max-w-7xl mx-auto px-6 lg:px-12">
+      <div class="flex items-center justify-between h-20 lg:h-24">
+        <a href="#" class="text-white text-xl font-serif tracking-wider">FORMA</a>
+        
+        <div class="hidden md:flex items-center gap-10">
+          <a href="#projects" class="nav-link text-white">Projects</a>
+          <a href="#about" class="nav-link text-white">About</a>
+          <a href="#services" class="nav-link text-white">Services</a>
+          <a href="#contact" class="nav-link text-white">Contact</a>
+        </div>
+
+        <button id="menu-toggle" class="md:hidden text-white p-2 -mr-2" aria-label="Open menu">
+          <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M4 6h16M4 12h16M4 18h16"/>
+          </svg>
+        </button>
+      </div>
+    </div>
+  </nav>
+
+  <!-- Mobile Menu Overlay -->
+  <div id="menu-overlay" class="menu-overlay md:hidden">
+    <button id="menu-close" class="absolute top-6 right-6 text-[var(--dark-fg)] p-2" aria-label="Close menu">
+      <svg class="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M6 18L18 6M6 6l12 12"/>
+      </svg>
+    </button>
+    <div class="flex flex-col">
+      <a href="#projects" class="menu-link font-serif" data-text="Projects"><span>Projects</span></a>
+      <a href="#about" class="menu-link font-serif" data-text="About"><span>About</span></a>
+      <a href="#services" class="menu-link font-serif" data-text="Services"><span>Services</span></a>
+      <a href="#contact" class="menu-link font-serif" data-text="Contact"><span>Contact</span></a>
+    </div>
+  </div>
+
+  <!-- Hero Section -->
+  <section class="min-h-screen grid grid-cols-1 lg:grid-cols-2">
+    <!-- Left Content -->
+    <div class="flex flex-col justify-center px-6 lg:px-16 py-24 lg:py-0 order-2 lg:order-1 bg-[var(--bg)]">
+      <div class="reveal-left" style="transition-delay: 0.2s;">
+        <span class="text-xs tracking-[0.2em] text-[var(--fg-muted)] uppercase">Architecture Studio</span>
+        <h1 class="font-serif text-5xl md:text-6xl lg:text-7xl mt-4 mb-6 leading-[1.1]">
+          We build<br>living spaces.
+        </h1>
+        <p class="text-lg text-[var(--fg-muted)] max-w-md mb-8 font-light">
+          Creating timeless architecture and interior designs that blend functionality with aesthetic purity.
+        </p>
+        <div class="flex gap-4">
+          <a href="#projects" class="btn-primary">View Projects</a>
+        </div>
+      </div>
+    </div>
+
+    <!-- Right Image -->
+    <div class="h-[60vh] lg:h-auto order-1 lg:order-2 relative hero-img-container">
+      <img 
+        src="https://images.unsplash.com/photo-1600585154340-be6161a56a0c?ixlib=rb-4.0.3&auto=format&fit=crop&w=2070&q=80" 
+        alt="Modern concrete house with large windows" 
+        class="hero-img w-full h-full object-cover"
+        id="hero-img"
+      >
+      <div class="absolute bottom-6 right-6 bg-white/90 backdrop-blur-sm px-4 py-2 text-xs tracking-wider">
+        <span class="text-[var(--fg-muted)]">Featured</span> &mdash; Villa ARIA
+      </div>
+    </div>
+  </section>
+
+  <!-- Marquee -->
+  <div class="py-8 border-y border-[var(--border)] bg-[var(--bg-alt)]">
+    <div class="marquee-container">
+      <div class="marquee-content text-6xl md:text-8xl font-serif text-[var(--border)]">
+        Architecture &mdash; Interior Design &mdash; Urban Planning &mdash; Landscape &mdash; Architecture &mdash; Interior Design &mdash; Urban Planning &mdash; Landscape &mdash; 
+      </div>
+    </div>
+  </div>
+
+  <!-- Projects Section -->
+  <section id="projects" class="py-24 lg:py-32 bg-[var(--bg)]">
+    <div class="max-w-7xl mx-auto px-6 lg:px-12">
+      <div class="flex flex-col md:flex-row md:items-end justify-between mb-16 gap-6">
+        <div class="reveal">
+          <span class="text-xs tracking-[0.2em] text-[var(--accent)] uppercase">Selected Works</span>
+          <h2 class="font-serif text-4xl lg:text-5xl mt-2">Our Projects</h2>
+        </div>
+        <a href="#" class="reveal text-sm text-[var(--fg-muted)] hover:text-[var(--accent)] transition-colors flex items-center gap-2" style="transition-delay: 0.1s;">
+          View All Projects
+          <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 8l4 4m0 0l-4 4m4-4H3"/>
+          </svg>
+        </a>
+      </div>
+
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-6 lg:gap-10">
+        <!-- Project 1 -->
+        <div class="project-card reveal" style="transition-delay: 0.2s;">
+          <div class="aspect-[4/5] relative">
+            <img 
+              src="https://images.unsplash.com/photo-1600607687939-ce8a6c25118c?ixlib=rb-4.0.3&auto=format&fit=crop&w=1000&q=80" 
+              alt="Minimalist living room" 
+              class="w-full h-full object-cover"
+            >
+            <div class="project-overlay"></div>
+            <div class="project-info text-white">
+              <span class="text-xs tracking-wider opacity-75">Residential</span>
+              <h3 class="font-serif text-2xl mt-1">Glass House</h3>
+            </div>
+          </div>
+        </div>
+
+        <!-- Project 2 -->
+        <div class="project-card reveal mt-0 md:mt-24" style="transition-delay: 0.3s;">
+          <div class="aspect-[4/5] relative">
+            <img 
+              src="https://images.unsplash.com/photo-1600566753086-00f18fb6b3ea?ixlib=rb-4.0.3&auto=format&fit=crop&w=1000&q=80" 
+              alt="Modern kitchen design" 
+              class="w-full h-full object-cover"
+            >
+            <div class="project-overlay"></div>
+            <div class="project-info text-white">
+              <span class="text-xs tracking-wider opacity-75">Interior</span>
+              <h3 class="font-serif text-2xl mt-1">Canvas Loft</h3>
+            </div>
+          </div>
+        </div>
+
+        <!-- Project 3 -->
+        <div class="project-card reveal" style="transition-delay: 0.4s;">
+          <div class="aspect-[4/5] relative">
+            <img 
+              src="https://images.unsplash.com/photo-1600585154526-990dced4db0d?ixlib=rb-4.0.3&auto=format&fit=crop&w=1000&q=80" 
+              alt="Exterior house design" 
+              class="w-full h-full object-cover"
+            >
+            <div class="project-overlay"></div>
+            <div class="project-info text-white">
+              <span class="text-xs tracking-wider opacity-75">Architecture</span>
+              <h3 class="font-serif text-2xl mt-1">Villa ARIA</h3>
+            </div>
+          </div>
+        </div>
+
+        <!-- Project 4 -->
+        <div class="project-card reveal mt-0 md:mt-24" style="transition-delay: 0.5s;">
+          <div class="aspect-[4/5] relative">
+            <img 
+              src="https://images.unsplash.com/photo-1600573472591-ee6c563aaec8?ixlib=rb-4.0.3&auto=format&fit=crop&w=1000&q=80" 
+              alt="Apartment interior" 
+              class="w-full h-full object-cover"
+            >
+            <div class="project-overlay"></div>
+            <div class="project-info text-white">
+              <span class="text-xs tracking-wider opacity-75">Renovation</span>
+              <h3 class="font-serif text-2xl mt-1">Urban Retreat</h3>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- About Section -->
+  <section id="about" class="py-24 lg:py-32 bg-[var(--dark-bg)] text-[var(--dark-fg)]">
+    <div class="max-w-7xl mx-auto px-6 lg:px-12">
+      <div class="grid lg:grid-cols-2 gap-16 lg:gap-24 items-center">
+        <div class="reveal-left">
+          <img 
+            src="https://images.unsplash.com/photo-1486406146926-c627a92ad1ab?ixlib=rb-4.0.3&auto=format&fit=crop&w=1000&q=80" 
+            alt="Architecture sketching" 
+            class="w-full aspect-[4/5] object-cover"
+          >
+        </div>
+        <div class="reveal-right">
+          <span class="text-xs tracking-[0.2em] text-[var(--accent)] uppercase">About Us</span>
+          <h2 class="font-serif text-4xl lg:text-5xl mt-4 mb-8">Designing for tomorrow.</h2>
+          <p class="text-lg opacity-75 mb-6 font-light">
+            Founded in 2015, FORMA Studio has grown into an international practice recognized for creating spaces that connect people with their environment.
+          </p>
+          <p class="text-lg opacity-75 mb-10 font-light">
+            Our approach combines rigorous research with creative exploration, ensuring every project is both culturally relevant and contextually sensitive.
+          </p>
+          
+          <!-- Stats -->
+          <div class="grid grid-cols-3 gap-8 pt-8 border-t border-white/10">
+            <div>
+              <div class="font-serif text-4xl text-[var(--accent)]">47</div>
+              <div class="text-xs tracking-wider opacity-50 mt-1">Awards Won</div>
+            </div>
+            <div>
+              <div class="font-serif text-4xl text-[var(--accent)]">12</div>
+              <div class="text-xs tracking-wider opacity-50 mt-1">Years Exp.</div>
+            </div>
+            <div>
+              <div class="font-serif text-4xl text-[var(--accent)]">89</div>
+              <div class="text-xs tracking-wider opacity-50 mt-1">Projects</div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Services Section -->
+  <section id="services" class="py-24 lg:py-32 bg-[var(--bg-alt)]">
+    <div class="max-w-7xl mx-auto px-6 lg:px-12">
+      <div class="text-center mb-16 reveal">
+        <span class="text-xs tracking-[0.2em] text-[var(--accent)] uppercase">What We Do</span>
+        <h2 class="font-serif text-4xl lg:text-5xl mt-4">Our Services</h2>
+      </div>
+
+      <div class="grid md:grid-cols-3 gap-8">
+        <!-- Service 1 -->
+        <div class="reveal bg-[var(--card)] p-8 lg:p-10 border border-[var(--border)] hover:border-[var(--accent)] transition-colors duration-500" style="transition-delay: 0.1s;">
+          <div class="w-12 h-12 flex items-center justify-center border border-[var(--fg)] mb-6">
+            <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4"/>
+            </svg>
+          </div>
+          <h3 class="font-serif text-xl mb-3">Architecture</h3>
+          <p class="text-[var(--fg-muted)] text-sm font-light leading-relaxed">
+            Comprehensive architectural design from concept to construction documentation, tailored to your vision.
+          </p>
+        </div>
+
+        <!-- Service 2 -->
+        <div class="reveal bg-[var(--card)] p-8 lg:p-10 border border-[var(--border)] hover:border-[var(--accent)] transition-colors duration-500" style="transition-delay: 0.2s;">
+          <div class="w-12 h-12 flex items-center justify-center border border-[var(--fg)] mb-6">
+            <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M4 5a1 1 0 011-1h14a1 1 0 011 1v2a1 1 0 01-1 1H5a1 1 0 01-1-1V5zM4 13a1 1 0 011-1h6a1 1 0 011 1v6a1 1 0 01-1 1H5a1 1 0 01-1-1v-6zM16 13a1 1 0 011-1h2a1 1 0 011 1v6a1 1 0 01-1 1h-2a1 1 0 01-1-1v-6z"/>
+            </svg>
+          </div>
+          <h3 class="font-serif text-xl mb-3">Interior Design</h3>
+          <p class="text-[var(--fg-muted)] text-sm font-light leading-relaxed">
+            Thoughtful interior spaces that enhance daily living through material selection and spatial planning.
+          </p>
+        </div>
+
+        <!-- Service 3 -->
+        <div class="reveal bg-[var(--card)] p-8 lg:p-10 border border-[var(--border)] hover:border-[var(--accent)] transition-colors duration-500" style="transition-delay: 0.3s;">
+          <div class="w-12 h-12 flex items-center justify-center border border-[var(--fg)] mb-6">
+            <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M3.055 11H5a2 2 0 012 2v1a2 2 0 002 2 2 2 0 012 2v2.945M8 3.935V5.5A2.5 2.5 0 0010.5 8h.5a2 2 0 012 2 2 2 0 104 0 2 2 0 012-2h1.064M15 20.488V18a2 2 0 012-2h3.064M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/>
+            </svg>
+          </div>
+          <h3 class="font-serif text-xl mb-3">Urban Planning</h3>
+          <p class="text-[var(--fg-muted)] text-sm font-light leading-relaxed">
+            Master planning and urban design strategies for sustainable community development.
+          </p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Contact Section -->
+  <section id="contact" class="py-24 lg:py-32 bg-[var(--bg)]">
+    <div class="max-w-7xl mx-auto px-6 lg:px-12">
+      <div class="grid lg:grid-cols-2 gap-16">
+        <div class="reveal">
+          <span class="text-xs tracking-[0.2em] text-[var(--accent)] uppercase">Get In Touch</span>
+          <h2 class="font-serif text-4xl lg:text-5xl mt-4 mb-8">Let's work together.</h2>
+          <p class="text-lg text-[var(--fg-muted)] font-light mb-10 max-w-md">
+            Have a project in mind? We'd love to hear about it. Drop us a line and let's create something extraordinary.
+          </p>
+
+          <div class="space-y-6">
+            <div>
+              <span class="text-xs tracking-wider text-[var(--fg-muted)] uppercase">Email</span>
+              <a href="mailto:hello@forma.studio" class="block text-lg hover:text-[var(--accent)] transition-colors mt-1">hello@forma.studio</a>
+            </div>
+            <div>
+              <span class="text-xs tracking-wider text-[var(--fg-muted)] uppercase">Phone</span>
+              <a href="tel:+1234567890" class="block text-lg hover:text-[var(--accent)] transition-colors mt-1">+1 (234) 567-890</a>
+            </div>
+            <div>
+              <span class="text-xs tracking-wider text-[var(--fg-muted)] uppercase">Location</span>
+              <p class="text-lg mt-1">123 Design Street, New York, NY</p>
+            </div>
+          </div>
+        </div>
+
+        <!-- Contact Form -->
+        <div class="reveal-right">
+          <form class="space-y-6">
+            <div class="grid sm:grid-cols-2 gap-6">
+              <div>
+                <label for="name" class="text-xs tracking-wider text-[var(--fg-muted)] uppercase">Name</label>
+                <input 
+                  type="text" 
+                  id="name" 
+                  class="w-full bg-transparent border-b border-[var(--border)] py-3 mt-2 focus:border-[var(--accent)] focus:outline-none transition-colors"
+                  required
+                >
+              </div>
+              <div>
+                <label for="email" class="text-xs tracking-wider text-[var(--fg-muted)] uppercase">Email</label>
+                <input 
+                  type="email" 
+                  id="email" 
+                  class="w-full bg-transparent border-b border-[var(--border)] py-3 mt-2 focus:border-[var(--accent)] focus:outline-none transition-colors"
+                  required
+                >
+              </div>
+            </div>
+            <div>
+              <label for="service" class="text-xs tracking-wider text-[var(--fg-muted)] uppercase">Service</label>
+              <select 
+                id="service" 
+                class="w-full bg-transparent border-b border-[var(--border)] py-3 mt-2 focus:border-[var(--accent)] focus:outline-none transition-colors cursor-pointer"
+              >
+                <option value="" class="bg-[var(--bg)]">Select a service</option>
+                <option value="architecture" class="bg-[var(--bg)]">Architecture</option>
+                <option value="interior" class="bg-[var(--bg)]">Interior Design</option>
+                <option value="planning" class="bg-[var(--bg)]">Urban Planning</option>
+              </select>
+            </div>
+            <div>
+              <label for="message" class="text-xs tracking-wider text-[var(--fg-muted)] uppercase">Message</label>
+              <textarea 
+                id="message" 
+                rows="4" 
+                class="w-full bg-transparent border-b border-[var(--border)] py-3 mt-2 focus:border-[var(--accent)] focus:outline-none transition-colors resize-none"
+                required
+              ></textarea>
+            </div>
+            <button type="submit" class="btn-primary mt-4">Send Message</button>
+          </form>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Footer -->
+  <footer class="py-12 bg-[var(--dark-bg)] text-[var(--dark-fg)]">
+    <div class="max-w-7xl mx-auto px-6 lg:px-12">
+      <div class="flex flex-col md:flex-row justify-between items-center gap-6">
+        <div class="font-serif text-2xl">FORMA</div>
+        <div class="flex gap-6">
+          <a href="#" class="text-xs tracking-wider opacity-60 hover:opacity-100 transition-opacity">Instagram</a>
+          <a href="#" class="text-xs tracking-wider opacity-60 hover:opacity-100 transition-opacity">LinkedIn</a>
+          <a href="#" class="text-xs tracking-wider opacity-60 hover:opacity-100 transition-opacity">Pinterest</a>
+        </div>
+        <div class="text-xs tracking-wider opacity-40">
+          &copy; 2024 FORMA Studio. All rights reserved.
+        </div>
+      </div>
+    </div>
+  </footer>
+
+  <script>
+    // Initialize all DOM elements first
+    const cursor = document.querySelector('.cursor');
+    const cursorDot = document.querySelector('.cursor-dot');
+    const menuToggle = document.getElementById('menu-toggle');
+    const menuClose = document.getElementById('menu-close');
+    const menuOverlay = document.getElementById('menu-overlay');
+    const menuLinks = menuOverlay.querySelectorAll('.menu-link');
+    const heroImg = document.getElementById('hero-img');
+    const revealElements = document.querySelectorAll('.reveal, .reveal-left, .reveal-right');
+    const projectCards = document.querySelectorAll('.project-card');
+
+    // Check for touch device or reduced motion
+    const isTouchDevice = () => window.matchMedia('(pointer: coarse)').matches;
+    const prefersReducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+    // Custom Cursor
+    if (!isTouchDevice() && cursor && cursorDot) {
+      document.addEventListener('mousemove', (e) => {
+        cursor.style.left = e.clientX + 'px';
+        cursor.style.top = e.clientY + 'px';
+        cursorDot.style.left = e.clientX + 'px';
+        cursorDot.style.top = e.clientY + 'px';
+      });
+
+      // Hover effect on interactive elements
+      const interactiveElements = document.querySelectorAll('a, button, input, textarea, select, .project-card');
+      interactiveElements.forEach(el => {
+        el.addEventListener('mouseenter', () => cursor.classList.add('hover'));
+        el.addEventListener('mouseleave', () => cursor.classList.remove('hover'));
+      });
+    }
+
+    // Mobile Menu
+    if (menuToggle && menuOverlay && menuClose) {
+      menuToggle.addEventListener('click', () => {
+        menuOverlay.classList.add('open');
+        document.body.style.overflow = 'hidden';
+      });
+
+      const closeMenu = () => {
+        menuOverlay.classList.remove('open');
+        document.body.style.overflow = '';
+      };
+
+      menuClose.addEventListener('click', closeMenu);
+      menuLinks.forEach(link => link.addEventListener('click', closeMenu));
+    }
+
+    // Parallax on Hero Image (only if image exists and no reduced motion)
+    if (heroImg && !prefersReducedMotion) {
+      document.addEventListener('mousemove', (e) => {
+        const x = (e.clientX / window.innerWidth - 0.5) * 20;
+        const y = (e.clientY / window.innerHeight - 0.5) * 20;
+        heroImg.style.transform = `scale(1.05) translate(${x}px, ${y}px)`;
+      });
+    }
+
+    // Scroll Reveal Animation
+    const revealObserver = new IntersectionObserver((entries) => {
+      entries.forEach(entry => {
+        if (entry.isIntersecting) {
+          entry.target.classList.add('visible');
+        }
+      });
+    }, { threshold: 0.1, rootMargin: '0px 0px -50px 0px' });
+
+    revealElements.forEach(el => revealObserver.observe(el));
+
+    // Smooth Scroll for Anchor Links
+    document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+      anchor.addEventListener('click', function(e) {
+        const href = this.getAttribute('href');
+        if (href.length > 1) {
+          e.preventDefault();
+          const target = document.querySelector(href);
+          if (target) {
+            target.scrollIntoView({ behavior: 'smooth' });
+          }
+        }
+      });
+    });
+  </script>
+</body>
+</html>
